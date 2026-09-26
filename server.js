@@ -21,7 +21,7 @@ const openapiDocument = {
             "1.0.0",
 
         description:
-            "MVP API for Campus Helpdesk ticket management, workflow, assignments, SLA, comments, work logs, escalation, feedback and AI predictions. Protected endpoints require Authorization: Bearer <JWT>. The development CORS origin is http://localhost:5173."
+            "MVP API for Campus Helpdesk ticket management, workflow, assignments, SLA, comments, work logs, escalation, feedback and AI predictions. Protected endpoints require Authorization: Bearer <JWT>. Allowed CORS origins are http://localhost:5173 and https://front-end.moustafabadawyfouad.workers.dev (overridable with the CORS_ORIGINS env var, comma-separated)."
     },
 
     security: [
@@ -1507,14 +1507,27 @@ const openapiDocument = {
 };
 
 
+const DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://front-end.moustafabadawyfouad.workers.dev",
+    "https://front-end2.moustafabadawyfouad.workers.dev"
+];
+
+const ALLOWED_ORIGINS = [
+    ...new Set(
+        (process.env.CORS_ORIGINS
+            ? process.env.CORS_ORIGINS.split(",")
+            : DEFAULT_ALLOWED_ORIGINS)
+            .map((origin) => origin.trim().replace(/\/+$/, ""))
+            .filter(Boolean)
+    )
+];
+
 app.use(express.json());
 
 app.use(
     cors({
-        origin: [
-            "http://localhost:5173",
-            "https://front-end.moustafabadawyfouad.workers.dev"
-        ]
+        origin: ALLOWED_ORIGINS
     })
 );
 
